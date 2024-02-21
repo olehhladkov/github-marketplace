@@ -1,5 +1,36 @@
-- name: Upload coverage reports to Codecov
-  uses: codecov/codecov-action@v4.0.1
-  with:
-    token: ${{ secrets.CODECOV_TOKEN }}
-    slug: olehhladkov/github-marketplace
+name: Test and Codecov
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 14
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Run tests
+      run: npm test
+
+  codecov:
+    runs-on: ubuntu-latest
+
+    needs: test
+
+    steps:
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v2
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
